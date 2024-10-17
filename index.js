@@ -12,33 +12,22 @@ const Filme = mongoose.model ("Filme", mongoose.Schema({
 }))
 
 async function conectarAoMongoDB() {
-    await mongoose.connect(`mongodb+srv://pro_mac:mongo_123@cluster0.skf8n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)    
+    await mongoose.connect(`mongodb+srv://pro_mac:mongo123@cluster0.skf8n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)    
 }
 
-let filmes = [
-    {
-        titulo: "Oppenheimer",
-        sinopse: "O físico J. Robert Oppenheimer trabalha com uma equipe de cientistas durante o Projeto Manhattan, levando ao desenvolvimento da bomba atômica."
-    },
-    {
-        titulo: "Divertidamente 2",
-        sinopse: "Com um salto temporal, Riley se encontra mais velha, passando pela tão temida adolescência. Junto com o amadurecimento, a sala de controle também está passando por uma adaptação para dar lugar a algo totalmente inesperado: novas emoções."
-    }
-]
-
-app.get('/filmes', (req, res) => {
+app.get('/filmes', async (req, res) => {
+    const filmes = await Filme.find()
     res.json(filmes)
 })
 
-app.post('/filmes', (req, res) => {
-    //capturar as informações enviadas
+app.post('/filmes', async (req, res) => {
     const titulo = req.body.titulo
     const sinopse = req.body.sinopse
-    //montar um objeto json filme com as informações capturadas
-    const novo_filme = {titulo: titulo, sinopse: sinopse}
-    //acrescentar o novo filme à base
-    filmes.push(novo_filme)
-    //para ilustrar, mostrar a base atualizada
+    
+    const filme = new Filme({titulo: titulo, sinopse: sinopse})
+    await filme.save()
+
+    const filmes = await Filme.find()
     res.json(filmes)
 })
 
